@@ -1,5 +1,5 @@
 ---
-# defaults file for virtualbox
+# vars file for virtualbox
 
 # Here you can specify the version to be installed.
 # By default, the role itself searches for the latest version.
