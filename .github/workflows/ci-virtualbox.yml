@@ -1,0 +1,59 @@
+---
+name: ci-virtualbox
+
+on:  # yamllint disable-line rule:truthy
+  push:
+
+env:
+  PY_COLORS: 1
+  ANSIBLE_FORCE_COLOR: 1
+
+jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - run: pip3 install molecule molecule[docker] yamllint ansible-lint
+
+      - name: Execute linters via molecule
+        run: |
+          cd roles/virtualbox
+          molecule lint
+          molecule syntax
+
+  molecule:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        distribution:
+          - debian9
+          - debian10
+          - ubuntu1604
+          - ubuntu1804
+          - ubuntu2004
+          - centos7
+          - centos8
+
+    steps:
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - run: pip3 install molecule molecule[docker] yamllint ansible-lint
+
+      - name: Execute molecule tests
+        run: |
+          cd roles/virtualbox
+          MOLECULE_DISTRO=${{ matrix.distribution }} molecule test
